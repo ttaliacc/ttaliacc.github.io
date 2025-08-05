@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All News</title>
+  <link rel="stylesheet" href="assets/css/style.css"> 
+</head>
+
+<body>
+    <section class="news section" id="news">
+      <h2 class="section__title container">All News</h2>
+  
+      <div class="news__container container" id="news-list">
+        <!-- News items will be dynamically loaded here -->
+      </div>
+  
+      <div class="container" style="margin-top: 1.5rem; text-align: center;">
+        <a href="index.html" class="button">Back to Home</a>
+      </div>
+    </section>
+  
+    <script>
+      fetch('assets/json/news.json')
+        .then(response => response.json())
+        .then(data => {
+          const newsList = document.getElementById('news-list');
+          data.forEach(item => {
+            const newsItem = document.createElement('div');
+            newsItem.className = 'news__item';
+            newsItem.innerHTML = `
+              <h3 class="news__title">[${item.date}] ${item.title}</h3>
+              <p class="news__text">${item.description}</p>
+            `;
+            newsList.appendChild(newsItem);
+          });
+        })
+        .catch(err => {
+          document.getElementById('news-list').innerHTML = '<p>Failed to load news.</p>';
+          console.error(err);
+        });
+    </script>
+</body>
+
+</html>

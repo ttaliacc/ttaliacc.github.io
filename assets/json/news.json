@@ -1,0 +1,22 @@
+[
+    {
+      "date": "Aug 2025",
+      "title": "Started Ph.D. at UT Austin 🤠",
+      "description": "I began my Ph.D. at the University of Texas at Austin, advised by <a href='https://www.cs.utexas.edu/~vijay/'>Prof. Vijay Chidambaram</a>."
+    },
+    {
+      "date": "Jul 2025",
+      "title": "Paper Accepted to HotStorage '25 🥳",
+      "description": "Our paper, <a href='https://dl.acm.org/doi/10.1145/3736548.3737829'><strong>RingSampler: GNN Sampling on Large-Scale Graphs with io_uring</strong></a>, was accepted to HotStorage '25."
+    },
+    {
+      "date": "May 2025",
+      "title": "Graduated from Boston University 🎓",
+      "description": "I earned my B.A. and M.S. degrees in Computer Science from Boston University."
+    },
+    {
+      "date": "Nov 2024",
+      "title": "Second Place at SOSP '24 SRC 🥈",
+      "description": "Won second place in the undergraduate category of the Student Research Competition at SOSP '24 for my project, <em>Scaling GNN Sampling on Large-Scale Graphs with io_uring</em>."
+    }
+  ]
