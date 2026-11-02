@@ -1,8 +1,13 @@
 [
     {
-    "date": "Aug 2026",
-    "title": "Finished IBM Research Internship 🎉",
-    "description": "It was a great experience being part of the storage research team at IBM SVL. A huge thank you to my mentors, Daniel Waddington and Narangerelt Batsoyol, and the entire team."
+      "date": "Nov 2026",
+      "title": "New KV-Cache Preprint 📣",
+      "description": "We released <a href='assets/pdf/kv-cache-analysis.pdf' target='_blank'><strong>The Storage View of KV Cache: Characterizing Cache Behavior Across LLM Workloads</strong></a>, a study of KV-cache storage behavior across 15 LLM workloads."
+    },
+    {
+      "date": "Aug 2026",
+      "title": "Finished IBM Research Internship 🎉",
+      "description": "It was a great experience being part of the storage research team at IBM SVL. A huge thank you to my mentors, Daniel Waddington and Narangerelt Batsoyol, and the entire team."
     },
     {
       "date": "Incoming May 2026",

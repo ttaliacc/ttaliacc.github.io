@@ -1,0 +1,7 @@
+@misc{chen2026analysis,
+  title = {The Storage View of {KV} Cache: Characterizing Cache Behavior Across {LLM} Workloads},
+  author = {Chen, Talia Q. and Waddington, Daniel and Batsoyol, Narangerelt and Chidambaram, Vijay},
+  year = {2026},
+  note = {Preprint},
+  pdf = {https://www.cs.utexas.edu/~vijay/papers/kv-cache-analysis.pdf}
+}
