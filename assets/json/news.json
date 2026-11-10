@@ -2,7 +2,7 @@
     {
       "date": "Nov 2026",
       "title": "New KV-Cache Preprint 📣",
-      "description": "We released <a href='assets/pdf/kv-cache-analysis.pdf' target='_blank'><strong>The Storage View of KV Cache: Characterizing Cache Behavior Across LLM Workloads</strong></a>, a study of KV-cache storage behavior across 15 LLM workloads."
+      "description": "We released <a href='https://arxiv.org/abs/2611.10178' target='_blank'><strong>The Storage View of KV Cache: Characterizing Cache Behavior Across LLM Workloads</strong></a>, a study of KV-cache storage behavior across 15 LLM workloads."
     },
     {
       "date": "Aug 2026",
