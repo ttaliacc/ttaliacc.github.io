@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The Storage View of KV Cache characterizes KV-cache reuse, lifetime, and footprint across heterogeneous LLM workloads.">
+    <meta name="keywords" content="KV cache, LLM serving, storage systems, workload characterization">
+
+    <meta property="og:title" content="The Storage View of KV Cache">
+    <meta property="og:description" content="Characterizing cache behavior across LLM workloads—and the small interface storage needs to manage it.">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="assets/img/kv-cache-paper/overview.png">
+
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/paper.css">
+    <link rel="shortcut icon" href="assets/img/tab_icon.png" type="image/png">
+
+    <title>The Storage View of KV Cache</title>
+</head>
+
+<body class="paper-page">
+    <header class="paper-header">
+        <nav class="paper-nav paper-shell" aria-label="Paper navigation">
+            <a class="paper-nav__back" href="index.html" aria-label="Back to homepage"><span aria-hidden="true">←</span> Back</a>
+            <div class="paper-nav__links">
+                <a href="#abstract">Abstract</a>
+                <a href="#findings">Findings</a>
+                <a href="https://arxiv.org/abs/2611.10178" target="_blank" rel="noopener">arXiv <span aria-hidden="true">↗</span></a>
+                <button class="paper-theme" id="paper-theme-button" type="button" aria-label="Switch color theme">
+                    <i class="uil uil-moon" aria-hidden="true"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="paper-hero paper-shell" aria-labelledby="paper-title">
+            <p class="paper-kicker">LLM systems · KV-cache storage · Workload characterization</p>
+            <h1 id="paper-title">The Storage View of KV Cache:<br><span>Characterizing Cache Behavior Across LLM Workloads</span></h1>
+
+            <p class="paper-authors">
+                <strong>Talia Q. Chen</strong><sup>1,†</sup>, Daniel Waddington<sup>2</sup>,
+                Narangerelt Batsoyol<sup>2</sup>, Vijay Chidambaram<sup>1</sup>
+            </p>
+            <p class="paper-affiliations"><sup>1</sup>The University of Texas at Austin &nbsp;·&nbsp; <sup>2</sup>IBM Research &nbsp;·&nbsp; <sup>†</sup>Work done during an internship at IBM Research</p>
+
+            <div class="paper-actions" aria-label="Paper resources">
+                <a class="paper-button paper-button--primary" href="https://arxiv.org/pdf/2611.10178" target="_blank" rel="noopener">
+                    <i class="uil uil-file-alt" aria-hidden="true"></i> Paper
+                </a>
+                <a class="paper-button" href="https://arxiv.org/abs/2611.10178" target="_blank" rel="noopener">
+                    <i class="uil uil-external-link-alt" aria-hidden="true"></i> arXiv
+                </a>
+                <a class="paper-button" href="assets/bib/kv-cache-analysis.txt" target="_blank">
+                    <i class="uil uil-brackets-curly" aria-hidden="true"></i> BibTeX
+                </a>
+            </div>
+        </section>
+
+        <section class="paper-teaser paper-shell" aria-labelledby="teaser-title">
+            <div class="paper-section-heading paper-section-heading--compact">
+                <p class="paper-eyebrow">The storage view</p>
+                <h2 id="teaser-title">KV state has two different lives.</h2>
+                <p>Private session history and shared recurring prefixes create different retention horizons, capacity pressure, and placement opportunities.</p>
+            </div>
+            <figure class="paper-figure paper-figure--wide">
+                <img src="assets/img/kv-cache-paper/overview.svg" alt="Diagram showing how application sessions create single-session and multi-session KV state, and how workload ID, session ID, and lifecycle signals guide storage decisions.">
+                <figcaption>Execution structure underlying KV-cache reuse. A narrow interface exposes enough context for storage to distinguish live private state from recurring shared state.</figcaption>
+            </figure>
+        </section>
+
+        <section class="paper-section paper-section--tint" id="abstract">
+            <div class="paper-shell paper-reading-width">
+                <div class="paper-section-heading paper-section-heading--label-only">
+                    <p class="paper-eyebrow">Abstract</p>
+                </div>
+                <p class="paper-abstract">
+                    Modern LLM serving extends KV caches beyond GPU memory into host DRAM, SSDs, and remote storage, yet these stores are still largely managed by workload-agnostic policies such as LRU and fixed TTLs. We characterize block-level KV-cache reuse, lifetime, and footprint across <strong>11 production and public traces</strong> spanning chat, API serving, RAG, coding agents, tool-using agents, and multi-lineage workflows. Across these workloads, KV state repeatedly separates into single-session state—useful to one live execution—and multi-session state that recurs across executions. The results show that three generic signals can expose much of the context storage needs: a <strong>workload identifier</strong>, a <strong>session identifier</strong>, and <strong>session completion</strong>.
+                </p>
+
+                <div class="paper-metrics" aria-label="Selected results">
+                    <article>
+                        <strong>+22%</strong>
+                        <span>more within-session hits retained with workload-specific recurrence estimates</span>
+                    </article>
+                    <article>
+                        <strong>−40%</strong>
+                        <span>dead state with workload-specific recurrence estimates</span>
+                    </article>
+                    <article>
+                        <strong>4–700×</strong>
+                        <span>more selective shared-state identification using session-aware reuse</span>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="paper-section paper-shell" id="findings">
+            <div class="paper-section-heading paper-reading-width">
+                <p class="paper-eyebrow">Key findings</p>
+                <h2>The same hit rate can hide very different storage behavior.</h2>
+                <p>We organize the analysis around reuse scope, lifetime, and footprint—the three dimensions that shape retention, reclamation, and tier placement.</p>
+            </div>
+
+            <article class="finding">
+                <div class="finding__text">
+                    <span class="finding__number">01 · Reuse scope</span>
+                    <h3>Separate private history from shared recurring content.</h3>
+                    <p>As sessions deepen, reuse increasingly comes from repeatedly reading their own accumulated history. Shallow workloads instead benefit from templates, documents, and prefixes shared across sessions.</p>
+                    <p class="finding__implication"><strong>Storage implication:</strong> manage these as distinct populations. Keep private history with its live session; rank shared blocks by recurrence across sessions.</p>
+                </div>
+                <figure class="paper-figure">
+                    <div class="plot-guide">
+                        <strong>How to read this</strong>
+                        <span>Blue is reuse within one session; orange is reuse shared across sessions. Session depth changes the balance.</span>
+                    </div>
+                    <img src="assets/img/kv-cache-paper/reuse.svg" alt="Bar chart comparing potential KV-cache hit ratios and the source of those hits across six representative workloads.">
+                    <figcaption>Potential hit ratio by source and the unique-block working set supplying 80% of hits.</figcaption>
+                </figure>
+            </article>
+
+            <article class="finding finding--reverse">
+                <div class="finding__text">
+                    <span class="finding__number">02 · Lifetime</span>
+                    <h3>Idle time is not the end of a session.</h3>
+                    <p>Human think time and tool execution can leave KV state idle but still useful. Short timers discard future hits; long timers keep completed-session state long after it becomes dead.</p>
+                    <p class="finding__implication"><strong>Storage implication:</strong> reclaim single-session state at session completion. Treat pauses as placement opportunities, not proof that state has expired.</p>
+                </div>
+                <figure class="paper-figure">
+                    <div class="plot-guide">
+                        <strong>How to read this</strong>
+                        <span>Moving right preserves more future hits, but it also leaves more completed-session state resident. No single TTL avoids both costs.</span>
+                    </div>
+                    <img src="assets/img/kv-cache-paper/session-lifetime.svg" alt="Two charts showing that short idle timers lose useful hits while long idle timers retain dead KV state.">
+                    <figcaption>The idle-TTL tradeoff: premature expiration on the left, dead-state residency on the right.</figcaption>
+                </figure>
+            </article>
+
+            <article class="finding">
+                <div class="finding__text">
+                    <span class="finding__number">03 · Footprint</span>
+                    <h3>The shared pool has a hot head and a large cold tail.</h3>
+                    <p>Widely recurring prefixes can deliver substantial reuse from a compact footprint, while most shared memory belongs to blocks read by only a few sessions. The balance varies sharply by workload.</p>
+                    <p class="finding__implication"><strong>Storage implication:</strong> keep frequently recurring blocks in faster tiers and demote the low-frequency tail according to each workload’s observed recurrence.</p>
+                </div>
+                <div class="tail-summary" aria-label="Shared KV state summary">
+                    <article>
+                        <span class="tail-summary__label">Fast tier</span>
+                        <h4>Compact hot head</h4>
+                        <p>Frequently recurring prefixes deliver substantial reuse from a comparatively small footprint.</p>
+                    </article>
+                    <article class="tail-summary__tail">
+                        <span class="tail-summary__label">Lower-cost tier</span>
+                        <strong>71–92%</strong>
+                        <h4>Large, infrequent tail</h4>
+                        <p>Across eight of nine traces, this share of multi-session memory belongs to blocks read by at most five sessions.</p>
+                    </article>
+                </div>
+                <details class="paper-detail">
+                    <summary>View the complete nine-workload plot</summary>
+                    <figure class="paper-figure">
+                        <div class="plot-guide">
+                            <strong>How to read this</strong>
+                            <span>Lower-left is the useful operating region: little shared memory retained with few cross-session hits lost.</span>
+                        </div>
+                        <img src="assets/img/kv-cache-paper/shared-tail.svg" alt="Nine workload plots comparing shared memory retained with the percentage of cross-session hits lost.">
+                        <figcaption>Shared memory retained versus cross-session hits lost under recurrence-based admission.</figcaption>
+                    </figure>
+                </details>
+            </article>
+        </section>
+
+        <section class="paper-section paper-section--tint" id="interface">
+            <div class="paper-shell">
+                <div class="paper-section-heading paper-reading-width">
+                    <p class="paper-eyebrow">Design takeaway</p>
+                    <h2>A small interface, not application-specific semantics.</h2>
+                    <p>Storage already observes block identities, sizes, and accesses. Three additional signals expose the missing structure.</p>
+                </div>
+
+                <div class="signal-grid">
+                    <article>
+                        <span>01</span>
+                        <h3>Workload ID</h3>
+                        <p>Groups sessions whose recurrence behavior should be learned together.</p>
+                    </article>
+                    <article>
+                        <span>02</span>
+                        <h3>Session ID</h3>
+                        <p>Distinguishes reuse within one execution from reuse across executions.</p>
+                    </article>
+                    <article>
+                        <span>03</span>
+                        <h3>Session lifecycle</h3>
+                        <p>Marks the clean reclamation boundary for private, single-session state.</p>
+                    </article>
+                </div>
+
+                <div class="paper-cta">
+                    <div>
+                        <p class="paper-eyebrow">Read the full paper</p>
+                        <h2>Explore the methodology, traces, and complete results.</h2>
+                    </div>
+                    <a class="paper-button paper-button--primary" href="https://arxiv.org/pdf/2611.10178" target="_blank" rel="noopener">Open PDF <span aria-hidden="true">↗</span></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="paper-footer">
+        <div class="paper-shell">
+            <p>The Storage View of KV Cache · 2026</p>s
+        </div>
+    </footer>
+
+    <script src="assets/js/paper.js"></script>
+</body>
+
+</html>
